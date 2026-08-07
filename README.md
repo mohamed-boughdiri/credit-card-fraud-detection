@@ -1,38 +1,17 @@
-# 💳 Credit Card Fraud Detection with Machine Learning
+# Credit Card Fraud Detection
 
-This project aims to detect fraudulent credit card transactions using machine learning techniques. Due to the **highly imbalanced dataset**, special attention is given to **data preprocessing, resampling, model selection**, and **threshold tuning** to improve **recall on the minority class (fraudulent transactions)**.
+Binary classification on the [Kaggle mlg-ulb credit card fraud dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) — 284,807 transactions, 492 fraudulent (0.17%).
 
-## 📊 Dataset
-- **Source:** [Kaggle - Credit Card Fraud Detection] (https://www.kaggle.com/mlg-ulb/creditcardfraud)
-- Contains **284,807 transactions**, with **492 fraudulent** (≈0.17%).
-- Evaluation was done on the **original unbalanced dataset** (not SMOTE-balanced) to reflect real-world fraud rates.
-- Additional version of the dataset: [Kaggle - Credit Card Fraud Detection (Yashpal Oswal)] (https://www.kaggle.com/datasets/yashpaloswal/fraud-detection-credit-card)
+## Approach
+- Train/test split performed before any preprocessing to prevent data leakage
+- Scaling and modeling combined in a single `sklearn.Pipeline` per model, so the fitted transform is guaranteed identical at train and inference time
+- Class imbalance handled via `class_weight='balanced'` / `scale_pos_weight` rather than naive resampling
+- Model comparison (Logistic Regression, Random Forest, XGBoost) via stratified 5-fold cross-validation on the training set only
+- Final evaluation on an untouched, realistically-imbalanced test set
+- Decision threshold selected using the precision-recall curve rather than a default 0.5 cutoff
 
-## 🧹 Data Preprocessing
-- Performed **standard scaling** (data is already PCA-transformed in original dataset).
-- Used **SMOTE** to oversample the minority class (fraud) for model training.
-- Ensured no data leakage by splitting before balancing.
+## Results
+Random Forest / XGBoost achieve F1 ≈ 0.85 and average precision ≈ 0.85 on held-out test data, consistent with published benchmarks on this dataset.
 
-## 🧠 ML Models Explored
-- SVM
-- LR (Logistic Regression)
-- Neural Network
-- Random Forest
-- XGBoost (Final model)
-- Custom threshold tuning to improve fraud recall
-
-XGBoost was selected as the final model due to its superior performance on fraud recall after threshold tuning and its robustness with tabular data.
-
-## 🧪 Final Metrics
-- **Model:** XGBoost with default threshold (0.5)
-- **Recall (Fraud):** ~65%
-- **Precision (Fraud):** ~69%
-- Significantly improved fraud detection performance compared to baseline RandomForest
-
-## 📈 Visualizations
-- Precision-Recall Curve
-- Feature Importance Plot
-
-## 🎯 Goal
-Maximize **recall** while maintaining reasonable **precision**, making the system more effective in real-world fraud detection where missing a fraud is more costly than a false alert.
-
+## Stack
+Python, pandas, scikit-learn, XGBoost, matplotlib/seaborn
